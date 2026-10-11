@@ -1,0 +1,167 @@
+:root{color-scheme:dark;--navy:#071725;--navy2:#0b2031;--blue:#54a0ff;--teal:#45d6c7;--ink:#e6f0f7;--muted:#9aafbe;--line:#22394b;--bg:#081827;--white:#102638;--red:#ff7780;--amber:#ffc368}
+html{background:#081827}
+body{background:radial-gradient(ellipse at 76% -16%,#15374a 0,transparent 38%),radial-gradient(ellipse at 9% 46%,#0d293a 0,transparent 37%),#081827;color:#e6f0f7}
+.sidebar{background:radial-gradient(ellipse at 12% 1%,#15526a 0,transparent 48%),linear-gradient(180deg,#061522,#091d2c 60%,#081927);border-right:1px solid #8bd9e015}
+.brand{color:#f2fbff}
+.brand-light{color:#67ddd1}
+.brand small,.nav-label,.eyebrow{color:#91aaba}
+.sidebar nav a{color:#adc0ce}
+.sidebar nav a:hover{background:#ffffff0b;border-color:#b4d8e311}
+.sidebar nav a.active{background:linear-gradient(100deg,#103a50,#12344a);border-color:#66d9cf21;box-shadow:inset 3px 0 #45d6c7,0 5px 18px #020c1426;color:#fff}
+.sidebar-bottom{border-color:#bbdeed1c}
+.sidebar-bottom small{color:#91aaba}
+.main{background:transparent}
+.topbar{background:#0b2030ee;border-color:#b2d3e317;box-shadow:0 8px 26px #020b1326;backdrop-filter:blur(18px)}
+.crumb{color:#8da6b6}
+.topbar h2{color:#edf7fc}
+.user-chip b{color:#edf7fc}
+.user-chip small,.logout{color:#a1b6c4}
+.avatar{background:#153f51;color:#79e3d7}
+.content{color:#e6f0f7}
+.content>footer{color:#8299a9}
+.welcome-row h1,.page-intro h1{color:#eef7fc}
+.muted,.page-intro p{color:#9aafbe}
+.btn{border-color:#2a4355;background:#122b3d;color:#d3e1eb;box-shadow:0 2px 12px #020b131c}
+.btn:hover{border-color:#4c6e83;background:#173449;box-shadow:0 6px 18px #020b133b}
+.btn.primary{border-color:#398fe8;background:linear-gradient(110deg,#287bd6,#2879cf 55%,#168f9a);color:#fff;box-shadow:0 5px 16px #176cc333}
+.btn.primary:hover{border-color:#6cb7fa;background:linear-gradient(110deg,#398ce5,#2688dd 55%,#1aa99f)}
+.btn.danger{border-color:#d64b5a;background:#b73d4d;color:#fff}
+.demo-banner{border-color:#226076;background:linear-gradient(105deg,#102f43,#10344a);color:#99d8e1;box-shadow:0 5px 22px #020b1322}
+.demo-banner p{color:#a9c1cf}
+.demo-banner.warning{border-color:#69512e;background:linear-gradient(105deg,#312919,#28281f);color:#ffd17b}
+.demo-banner.warning p{color:#c8b790}
+.stat-card,.panel{border-color:#20394b;background:linear-gradient(145deg,#102638f5,#0e2233f7);box-shadow:0 8px 24px #020a1226}
+.stat-card:hover,.panel:hover{border-color:#31556b;box-shadow:0 11px 28px #020a1247}
+.stat-top{color:#a5bac8}
+.stat-icon.blue-bg,.quick-icon.blue-bg,.map-kpi-icon.blue-bg,.weather-metric-icon.blue-bg,.map-operation-icon.blue-bg{background:#173754;color:#78b7ff}
+.stat-icon.teal-bg,.quick-icon.teal-bg,.map-kpi-icon.teal-bg,.weather-metric-icon.teal-bg,.map-operation-icon.teal-bg{background:#123c3f;color:#64e0d0}
+.stat-icon.amber-bg,.quick-icon.amber-bg,.map-kpi-icon.amber-bg,.weather-metric-icon.amber-bg,.map-operation-icon.amber-bg{background:#403321;color:#ffd078}
+.stat-icon.red-bg,.quick-icon.red-bg,.map-operation-icon.red-bg{background:#42272f;color:#ff9299}
+.stat-number{color:#f0f7fc}
+.stat-number small,.stat-note,.stat-top>span:first-child{color:#a2b6c3}
+.green-text{color:#57dfbe}
+.panel-head h3,.info-panel h3,.harbour-summary h3{color:#e7f2f8}
+.panel-head p{color:#9aafbe}
+.panel-head>a,.map-operation-link{color:#74b5ff}
+.panel-foot{border-color:#223849;color:#91a7b5}
+.map-preview .panel-head{background:transparent}
+.risk-item{border-color:#22394a}
+.risk-item b{color:#e4eef5}
+.risk-item small{color:#a0b4c1}
+.risk-mark.high{background:#44252d;color:#ff8d95}
+.risk-mark.medium{background:#413320;color:#ffd078}
+.pill.blue{background:#183555;color:#8bc0ff}
+.pill.red{background:#48262d;color:#ff9aa0}
+.pill.amber{background:#463722;color:#ffd481}
+.pill.teal{background:#153b3c;color:#75dfce}
+.empty-state,.empty-cell{color:#9cb0bd}
+.table-panel,.form-panel{background:linear-gradient(145deg,#102638,#0e2233)}
+.table-wrap{background:transparent}
+table{color:#dce8ef}
+th{background:#132b3c;color:#a7bbc8;border-color:#243b4d}
+td{border-color:#22394a}
+tr:hover td{background:#162f40}
+td b{color:#edf5fa}
+.subcell{color:#90a6b4}
+.status-dot{background:#45d6c7;box-shadow:0 0 0 3px #45d6c718}
+.page-intro .pill{box-shadow:0 2px 10px #020b1322}
+.map-kpi,.map-operation-card,.harbour-metric,.weather-metric-card{border-color:#20394b;background:linear-gradient(145deg,#112a3c,#0e2334);box-shadow:0 5px 18px #020b1324}
+.map-kpi small,.map-operation-copy small,.harbour-metric small{color:#99afbd}
+.map-kpi b,.map-operation-copy b,.harbour-metric b{color:#e5f0f6}
+.map-kpi em,.map-operation-copy em{color:#a3b5c1}
+.simulation-kpi,.harbour-source{border-color:#1e4c4b;background:linear-gradient(120deg,#102f35,#102839)}
+.simulation-paused{border-color:#705a34;background:#332d21}
+.simulation-paused .simulation-pulse{background:#ffc368;box-shadow:0 0 0 4px #ffc36824}
+.map-toolbar,.fleet-filters,.fleet-disclaimer{border-color:#21394b}
+.map-toolbar-title b,.fleet-heading h2{color:#e9f3f8}
+.map-toolbar-title small,.fleet-heading .muted{color:#9db0bd}
+.map-toggle{color:#bacad4}
+.map-fit-button{border-color:#294458}
+.map-attribution-note{border-color:#c7e9e92b;background:#0b2334ea;color:#c0d5de;backdrop-filter:blur(12px)}
+.map-legend{color:#a9bdc9}
+.map-stage,.map-panel #map{background:#102b3c}
+.leaflet-control-zoom a{background:#102a3c!important;color:#e3f1f7!important;border-color:#294153!important}
+.leaflet-control-zoom a:hover{background:#183d51!important}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#f5fafc;color:#193447}
+.fleet-panel{background:linear-gradient(150deg,#102638,#0e2233)}
+.fleet-search{border-color:#294253;background:#0b1f2e}
+.fleet-search:focus-within{border-color:#46aaa7;box-shadow:0 0 0 3px #45d6c718}
+.fleet-search input{color:#e4eff5}
+.fleet-search input::placeholder{color:#8299a8}
+.fleet-filters{background:#102638}
+.fleet-filter{color:#a5b8c4}
+.fleet-filter:hover{background:#18364a}
+.fleet-filter.active{border-color:#285874;background:#17374b;color:#84c5ff}
+.fleet-vessel{border-color:#203747;background:transparent;color:#dce8ef}
+.fleet-vessel:hover,.fleet-vessel:focus-visible{background:#153247}
+.fleet-vessel-info b{color:#e4eef5}
+.fleet-vessel-info small,.fleet-vessel-status,.fleet-vessel-course{color:#9aafbd}
+.fleet-disclaimer{background:#0c2030;color:#9eb3c0}
+.scenario-notice{border-color:#57492e;background:linear-gradient(100deg,#2b291f,#252b2b);color:#f3ce83}
+.scenario-notice p{color:#d1c19c}
+.forecast-updated{border-color:#24524c;background:#102d30}
+.forecast-updated b{color:#72dfc8}
+.forecast-updated small{color:#9fb9c1}
+.weather-now-card{border:1px solid #28566c;box-shadow:0 12px 35px #020a1245}
+.weather-metric-card>div:first-child{color:#a8bdc9}
+.weather-metric-card>b{color:#f1f7fb}
+.weather-metric-card>b small,.weather-metric-card p{color:#9aafbe}
+.forecast-panel-heading{background:transparent}
+.wave-bar-track{background:#1a3345}
+.wave-forecast-column>b{color:#c5d6e0}
+.wave-forecast-column>span{color:#91a8b7}
+.forecast-chart-legend{border-color:#20394a;color:#9eb3c0}
+.forecast-condition{background:#153b3c;color:#79dfcf}
+.forecast-condition.moderate{background:#443722;color:#ffd27c}
+.forecast-condition.rough{background:#48272e;color:#ff9da2}
+.scenario-notice .pill{box-shadow:none}
+.form-panel .panel-head{background:transparent}
+.form-grid label,.form-layout label{color:#bfd0da}
+input,select,textarea{border-color:#2b4659!important;background-color:#0b2030!important;color:#e6f0f7!important}
+input::placeholder,textarea::placeholder{color:#8399a8}
+input:focus,select:focus,textarea:focus{border-color:#4aabb2!important;box-shadow:0 0 0 3px #45d6c71b}
+select option{background:#0b2030;color:#e6f0f7}
+.flash{border-color:#35536a;background:#15354b;color:#d6eaf5}
+.flash.success{border-color:#23594d;background:#12362f;color:#9de8ce}
+.flash.error{border-color:#683a43;background:#3b252d;color:#ffadb1}
+.harbour-summary,.info-panel{background:linear-gradient(145deg,#112a3c,#0e2233)}
+.harbour-summary p,.info-panel p{color:#a2b6c3}
+.summary-row{border-color:#233c4e;color:#aebfc9}
+.summary-row b{color:#edf5f9}
+.weather-now-footer{color:#bdd0d9}
+.assistant-panel{border-color:#294456;background:#102638;box-shadow:0 20px 65px #020a12a6}
+.assistant-header{background:linear-gradient(110deg,#082032,#104854)}
+.assistant-messages{background:#091c2b}
+.assistant-reply{border-color:#274256;background:#142d40;color:#dce8ef}
+.assistant-user{background:#173b57;color:#d8edff}
+.assistant-pending{color:#a7bac6}
+.assistant-error{border-color:#68414a;background:#3a252c;color:#ffb2b6}
+.assistant-prompts,.assistant-form,.assistant-disclaimer{background:#102638}
+.assistant-prompts button{border-color:#294354;background:#122b3d;color:#c2d2dc}
+.assistant-prompts button:hover{border-color:#3d7774;background:#153538}
+.assistant-form input{border-color:#294556!important;background:#091e2d!important;color:#e6f0f7!important}
+.assistant-form button{background:linear-gradient(130deg,#188d8a,#2171b3)}
+.assistant-disclaimer{color:#91a7b4}
+.assistant-close{background:#ffffff18}
+.login-screen{background:#071725}
+.login-visual{background:radial-gradient(ellipse at 20% 22%,#13475a 0,transparent 38%),linear-gradient(145deg,#071725,#0a2132 55%,#0b3b49)}
+.login-panel{background:linear-gradient(145deg,#0c2030,#10283a)}
+.login-card{border-color:#284356;background:linear-gradient(145deg,#102638,#0d2131);box-shadow:0 20px 65px #020a1266}
+.login-card h2{color:#edf6fb}
+.login-card .muted{color:#a0b5c2}
+.login-card label{color:#c5d4dd}
+.login-card .demo-creds{border-color:#285168;background:#0b2233;color:#c9dce7}
+.login-card .demo-creds code{background:#183950;color:#8ec6ff}
+.login-card .mini-mark{background:#153e4e;color:#70e0d4}
+.login-logo,.hero-copy h1{color:#f1f8fc}
+.hero-copy p,.login-foot{color:#aac0cc}
+.eyebrow{color:#97b1bf}
+.radar-ring{border-color:#54d8ce3a}
+.radar-sweep{background:conic-gradient(from 0deg,transparent 0deg,#43d5c21f 45deg,#43d5c2 85deg,transparent 88deg)}
+.quick-actions a{border-color:#20394a}
+.quick-actions a:hover{background:#143247}
+.quick-actions b{color:#e5eff5}
+.quick-actions small{color:#9aafbd}
+.quick-actions i{color:#74b5ff}
+@media(max-width:820px){.sidebar{background:linear-gradient(180deg,#061522,#091d2c)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}

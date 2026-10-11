@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Sign in · SmartMarineSafety{% endblock %}
+{% block auth_content %}
+<div class="login-screen">
+  <div class="login-visual"><div class="login-logo">⚓ SMARTMARINESAFETY</div><div class="hero-copy"><div class="eyebrow">MARITIME INTELLIGENCE PLATFORM</div><h1>Safer seas.<br><span>Smarter decisions.</span></h1><p>A unified demo workspace for vessel awareness, harbour operations and safety alerts.</p><div class="radar"><div class="radar-ring r1"></div><div class="radar-ring r2"></div><div class="radar-ring r3"></div><div class="radar-sweep"></div><i class="dot d1"></i><i class="dot d2"></i><i class="dot d3"></i><i class="dot d4"></i></div></div><div class="login-foot">VESSEL AWARENESS · RISK MONITORING · RESPONSE LOGS</div></div>
+  <div class="login-panel"><form method="post" class="login-card"><div class="mini-mark">⚓</div><div class="eyebrow">WELCOME BACK</div><h2>Sign in to your workspace</h2><p class="muted">Use the demo credentials to explore the application.</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category,message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+  <label>Username</label><input name="username" placeholder="Enter username" required autocomplete="username">
+  <label>Password</label><input type="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+  <button class="btn primary full" type="submit">Sign in <span>→</span></button><div class="demo-creds"><b>DEMO ACCESS</b><div>Username <code>admin</code></div><div>Password <code>Marine@123</code></div></div><small class="muted">Demo-only authentication. Change credentials and security settings before deployment.</small></form></div>
+</div>
+{% endblock %}

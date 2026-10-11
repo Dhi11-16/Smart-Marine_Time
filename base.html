@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SmartMarineSafety{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='app-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='advanced-theme.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+{% if current_user %}
+<svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-overview" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="11" width="7" height="10" rx="2"/><rect x="3" y="14" width="8" height="7" rx="2"/></symbol>
+  <symbol id="icon-map" viewBox="0 0 24 24"><path d="M3 6.5 8.5 4l7 2.5L21 4v13.5L15.5 20l-7-2.5L3 20z"/><path d="M8.5 4v13.5M15.5 6.5V20"/></symbol>
+  <symbol id="icon-ship" viewBox="0 0 24 24"><path d="m3 14 2 5h14l2-5-9-4zM12 10V3m0 0H7v5h10V3zM3 21c2 0 2-1 4-1s2 1 5 1 3-1 5-1 2 1 4 1"/></symbol>
+  <symbol id="icon-alert" viewBox="0 0 24 24"><path d="m12 3 10 18H2z"/><path d="M12 9v5m0 3h.01"/></symbol>
+  <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-8A6 6 0 0 0 6 9a4.5 4.5 0 0 0 1 9z"/><path d="m9 21 1-2m4 2 1-2"/></symbol>
+  <symbol id="icon-sos" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8m-4-4h8"/></symbol>
+  <symbol id="icon-message" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="icon-maintenance" viewBox="0 0 24 24"><path d="M14.7 6.3a5 5 0 0 0-6.6 6.6L3 18l3 3 5.1-5.1a5 5 0 0 0 6.6-6.6L14 13l-3-3z"/></symbol>
+  <symbol id="icon-harbour" viewBox="0 0 24 24"><path d="M3 20h18M5 20V9h14v11M9 9V5h6v4m-3-7v7m-5 5h2m4 0h2m-8 4h2m4 0h2"/></symbol>
+  <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></symbol>
+</svg>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-icon">⚓</span><span>SmartMarine<span class="brand-light">Safety</span><small>VESSEL OPERATIONS</small></span></a>
+    <div class="nav-label">WORKSPACE</div>
+    <nav>
+      <a class="{{ 'active' if request.endpoint=='dashboard' else '' }}" href="{{ url_for('dashboard') }}"><svg class="nav-icon"><use href="#icon-overview"/></svg><span>Overview</span></a>
+      <a class="{{ 'active' if request.endpoint=='live_map' else '' }}" href="{{ url_for('live_map') }}"><svg class="nav-icon"><use href="#icon-map"/></svg><span>Live Vessel Map</span></a>
+      <a class="{{ 'active' if request.endpoint=='nearby_ships' else '' }}" href="{{ url_for('nearby_ships') }}"><svg class="nav-icon"><use href="#icon-ship"/></svg><span>Nearby Ships</span></a>
+      <a class="{{ 'active' if request.endpoint=='collision_risk' else '' }}" href="{{ url_for('collision_risk') }}"><svg class="nav-icon"><use href="#icon-alert"/></svg><span>Collision Risk</span></a>
+      <a class="{{ 'active' if request.endpoint=='weather_waves' else '' }}" href="{{ url_for('weather_waves') }}"><svg class="nav-icon"><use href="#icon-cloud"/></svg><span>Weather & Waves</span></a>
+      <a class="{{ 'active' if request.endpoint=='sos' else '' }}" href="{{ url_for('sos') }}"><svg class="nav-icon"><use href="#icon-sos"/></svg><span>SOS Emergency</span></a>
+      <a class="{{ 'active' if request.endpoint=='communication' else '' }}" href="{{ url_for('communication') }}"><svg class="nav-icon"><use href="#icon-message"/></svg><span>Communication</span></a>
+      <a class="{{ 'active' if request.endpoint=='maintenance' else '' }}" href="{{ url_for('maintenance') }}"><svg class="nav-icon"><use href="#icon-maintenance"/></svg><span>Maintenance</span></a>
+      <a class="{{ 'active' if request.endpoint=='harbour_control' else '' }}" href="{{ url_for('harbour_control') }}"><svg class="nav-icon"><use href="#icon-harbour"/></svg><span>Harbour Control</span></a>
+      <a class="{{ 'active' if request.endpoint=='alerts' else '' }}" href="{{ url_for('alerts') }}"><svg class="nav-icon"><use href="#icon-history"/></svg><span>Alert History</span></a>
+    </nav>
+    <div class="sidebar-bottom"><div class="online-dot"></div><div><b>Local simulation</b><small>Generated vessel data</small></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><span class="crumb">MARITIME OPERATIONS</span><h2>{% block page_heading %}Operations Overview{% endblock %}</h2></div><div class="user-chip"><span class="avatar">{{ current_user[0]|upper }}</span><span><b>{{ current_user }}</b><small>{{ current_role|upper }}</small></span><a class="logout" href="{{ url_for('logout') }}">Log out ↗</a></div></header>
+    <section class="content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category,message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      <footer>SmartMarineSafety · Local simulation · Not for real navigation or emergency response</footer>
+    </section>
+  </main>
+</div>
+<section class="assistant-panel" id="assistant-panel" aria-label="Tamil and English operations assistant" hidden>
+  <header class="assistant-header">
+    <span class="assistant-avatar" aria-hidden="true">✦</span>
+    <span class="assistant-heading"><b id="assistant-title">கடல் உதவியாளர்</b><small id="assistant-subtitle">உள்ளூர் app உதவி · தமிழ் / English</small></span>
+    <label class="assistant-language"><span class="sr-only">Assistant language</span><select id="assistant-language"><option value="ta">தமிழ்</option><option value="en">English</option></select></label>
+    <button class="assistant-close" id="assistant-close" type="button" aria-label="Close assistant">×</button>
+  </header>
+  <div class="assistant-messages" id="assistant-messages" aria-live="polite">
+    <div class="assistant-bubble assistant-reply" data-greeting-ta="வணக்கம்! கப்பல் பட்டியல், வானிலை/அலை மாதிரி, துறைமுக அட்டவணை அல்லது SOS பற்றி கேளுங்கள்." data-greeting-en="Hello! Ask me about the fleet, weather/wave scenario, harbour schedule, or SOS.">வணக்கம்! கப்பல் பட்டியல், வானிலை/அலை மாதிரி, துறைமுக அட்டவணை அல்லது SOS பற்றி கேளுங்கள்.</div>
+  </div>
+  <div class="assistant-prompts"><button type="button" data-prompt-ta="வானிலை மற்றும் அலை நிலை?" data-prompt-en="Weather and wave conditions?">🌊 <span>Weather</span></button><button type="button" data-prompt-ta="கப்பல் நிலை என்ன?" data-prompt-en="What is the fleet status?">⚓ <span>Fleet</span></button><button type="button" data-prompt-ta="துறைமுக அட்டவணை என்ன?" data-prompt-en="Show harbour schedule">▤ <span>Harbour</span></button></div>
+  <form class="assistant-form" id="assistant-form">
+    <input id="assistant-input" type="text" maxlength="500" autocomplete="off" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..." aria-label="Message the marine assistant" required>
+    <button type="submit" aria-label="Send message">➤</button>
+  </form>
+  <p class="assistant-disclaimer" id="assistant-disclaimer">உள்ளூர் உதவியாளர் · அவசர அல்லது வழிசெலுத்தல் முடிவுகளுக்கல்ல</p>
+</section>
+<button class="assistant-launcher" id="assistant-launcher" type="button" aria-label="தமிழ் / English கடல் உதவியாளரை திற" aria-expanded="false"><span class="assistant-launcher-icon">✦</span><span class="assistant-launcher-label">கடல் உதவியாளர்</span><span class="assistant-launcher-dot"></span></button>
+<script src="{{ url_for('static', filename='assistant.js') }}" defer></script>
+{% else %}
+{% block auth_content %}{% endblock %}
+{% endif %}
+</body>
+</html>

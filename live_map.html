@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block title %}Live Vessel Map · SmartMarineSafety{% endblock %}
+{% block page_heading %}Live Vessel Map{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+{% block content %}
+<div class="page-intro map-page-intro">
+  <div><div class="eyebrow">FLEET TRACKING · CHENNAI COAST</div><h1>Live vessel operations</h1><p class="muted">Interactive coastal map, fleet tracking and harbour-zone awareness.</p></div>
+  <button class="btn primary" id="advance-sim" type="button"><span aria-hidden="true">↻</span> Advance simulation</button>
+</div>
+<div class="map-kpis">
+  <div class="map-kpi"><span class="map-kpi-icon blue-bg"><svg><use href="#icon-ship"/></svg></span><span><small>TRACKED FLEET</small><b>{{ ships|length }} <em>vessels</em></b></span></div>
+  <div class="map-kpi"><span class="map-kpi-icon teal-bg"><span class="online-dot"></span></span><span><small>UNDERWAY</small><b>{{ ships|selectattr('status', 'equalto', 'Underway')|list|length }} <em>vessels</em></b></span></div>
+  <div class="map-kpi"><span class="map-kpi-icon amber-bg"><svg><use href="#icon-map"/></svg></span><span><small>AREA</small><b>Chennai <em>coastal zone</em></b></span></div>
+  <div class="map-kpi simulation-kpi"><span class="simulation-pulse"></span><span><small>LOCAL SIMULATION · 4×</small><b>Auto-updating <em id="tick-time">starting…</em></b></span></div>
+</div>
+<div class="map-workspace">
+  <section class="panel map-panel map-main-panel" aria-label="Interactive vessel map">
+    <div class="map-toolbar">
+      <div class="map-toolbar-title"><span class="map-live-dot"></span><span><b>Coastal traffic</b><small>13.08° N · 80.27° E · local vessel simulation</small></span></div>
+      <div class="map-tools">
+        <label class="map-toggle"><input id="nautical-layer-toggle" type="checkbox"><span class="toggle-track"></span><span>Nautical overlay</span></label>
+        <button class="btn map-fit-button" id="fit-fleet" type="button" title="Fit all vessels in view">Fit fleet <span aria-hidden="true">⛶</span></button>
+      </div>
+    </div>
+    <div class="map-stage">
+      <div id="map" role="application" aria-label="Interactive map showing simulated vessel positions"></div>
+      <div id="map-fallback" class="map-fallback" hidden>Map tiles could not be loaded. Check your internet connection and reload this page.</div>
+      <div class="map-attribution-note"><span class="map-live-dot"></span> SIMULATED · REFRESHES EVERY 15 SEC</div>
+    </div>
+    <div class="map-legend">
+      <span><i class="legend-vessel underway"></i> Underway</span><span><i class="legend-vessel approaching"></i> Approaching</span><span><i class="legend-vessel harbour"></i> Harbour</span><span><i class="legend-zone"></i> Illustrative port zone</span>
+    </div>
+  </section>
+  <aside class="panel fleet-panel">
+    <div class="fleet-heading"><div><span class="eyebrow">FLEET MONITOR</span><h2>Nearby vessels</h2><p class="muted">Select a vessel to locate it on the map.</p></div><span class="pill blue">{{ ships|length }} TOTAL</span></div>
+    <label class="fleet-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input id="vessel-search" type="search" placeholder="Search fleet..." autocomplete="off"></label>
+    <div class="fleet-filters" role="group" aria-label="Filter vessels">
+      <button class="fleet-filter active" type="button" data-filter="all">All <span>{{ ships|length }}</span></button>
+      <button class="fleet-filter" type="button" data-filter="underway">Underway</button>
+      <button class="fleet-filter" type="button" data-filter="harbour">Harbour</button>
+    </div>
+    <div class="fleet-list" id="fleet-list">
+      {% for ship in ships %}
+      <button class="fleet-vessel" type="button" data-vessel="{{ ship.name|lower }}" data-status="{{ ship.status|lower }}" data-index="{{ loop.index0 }}">
+        <span class="fleet-vessel-icon {{ ship.status|lower|replace(' ', '-') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 14 2 5h14l2-5-9-4zM12 10V3m0 0H7v5h10V3zM3 21c2 0 2-1 4-1s2 1 5 1 3-1 5-1 2 1 4 1"/></svg></span>
+        <span class="fleet-vessel-info"><b>{{ ship.name }}</b><small>{{ ship.vessel_type }} · {{ '%.1f'|format(ship.speed) }} kn</small></span>
+        <span class="fleet-vessel-status"><i></i>{{ ship.status }}</span>
+        <span class="fleet-vessel-course">{{ ship.course }}°</span>
+      </button>
+      {% endfor %}
+      <div class="fleet-empty" id="fleet-empty" hidden>No vessels match your search.</div>
+    </div>
+    <div class="fleet-disclaimer"><span aria-hidden="true">ⓘ</span><p>Locally generated vessel tracks. No live AIS source is connected; never use this simulation for navigation.</p></div>
+  </aside>
+</div>
+<section class="map-operations-strip" aria-label="Marine operations overview">
+  <a class="map-operation-card" href="{{ url_for('weather_waves') }}">
+    <span class="map-operation-icon teal-bg">≈</span>
+    <span class="map-operation-copy"><small>WAVE SCENARIO · NEXT 4 HRS</small><b>{{ current_conditions.wave_m }} m <em>{{ current_conditions.condition }}</em></b></span>
+    <span class="map-operation-link">Forecast ↗</span>
+  </a>
+  <a class="map-operation-card" href="{{ url_for('weather_waves') }}">
+    <span class="map-operation-icon blue-bg">↗</span>
+    <span class="map-operation-copy"><small>WIND SCENARIO · NEXT 4 HRS</small><b>{{ current_conditions.wind_kmh }} km/h <em>{{ current_conditions.wind_direction }}°</em></b></span>
+    <span class="map-operation-link">Conditions ↗</span>
+  </a>
+  <a class="map-operation-card" href="{{ url_for('harbour_control') }}">
+    <span class="map-operation-icon amber-bg">▤</span>
+    <span class="map-operation-copy"><small>NEXT LOCAL HARBOUR MOVEMENT</small><b>{% if next_harbour_event %}{{ next_harbour_event.movement }} · {{ next_harbour_event.vessel }}{% else %}No movement scheduled{% endif %}</b></span>
+    <span class="map-operation-link">Port board ↗</span>
+  </a>
+  <a class="map-operation-card" href="{{ url_for('collision_risk') }}">
+    <span class="map-operation-icon red-bg">⚠</span>
+    <span class="map-operation-copy"><small>PROXIMITY WATCH · SIMPLE RANGE</small><b>{{ risk_count }} <em>nearby flags</em></b></span>
+    <span class="map-operation-link">Review ↗</span>
+  </a>
+</section>
+<script>
+(() => {
+  const ships = {{ ships_json|safe }};
+  const fallback = document.getElementById('map-fallback');
+  if (typeof L === 'undefined') {
+    fallback.hidden = false;
+    return;
+  }
+
+  const map = L.map('map', { zoomControl: false, scrollWheelZoom: true }).setView([13.085, 80.265], 12);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  let tileErrorTimer;
+  streetLayer.on('tileerror', () => {
+    window.clearTimeout(tileErrorTimer);
+    tileErrorTimer = window.setTimeout(() => {
+      if (!document.querySelector('#map .leaflet-tile-loaded')) {
+        fallback.textContent = 'Map tiles are unavailable. Connect to the internet to load the OpenStreetMap basemap; vessel simulation still runs locally.';
+        fallback.hidden = false;
+      }
+    }, 1200);
+  });
+  streetLayer.on('tileload', () => {
+    window.clearTimeout(tileErrorTimer);
+    fallback.hidden = true;
+  });
+  const nauticalLayer = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    opacity: 0.9,
+    attribution: '&copy; <a href="https://www.openseamap.org/">OpenSeaMap</a>'
+  });
+  const portZone = L.circle([13.0827, 80.2707], {
+    radius: 1100,
+    color: '#e5a23c',
+    weight: 1.5,
+    dashArray: '7 7',
+    fillColor: '#e5a23c',
+    fillOpacity: 0.08
+  }).bindTooltip('Illustrative Chennai port area');
+  portZone.addTo(map);
+  const markers = new Map();
+  const fleetBounds = [];
+
+  ships.forEach((ship) => {
+    const statusClass = ship.status.toLowerCase().replace(/\s+/g, '-');
+    const markerIcon = L.divIcon({
+      className: 'vessel-marker-shell',
+      html: `<span class="vessel-marker ${statusClass}" style="--course:${Number(ship.course) || 0}deg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 14 2 5h14l2-5-9-4zM12 10V3m0 0H7v5h10V3z"/></svg></span>`,
+      iconSize: [38, 38],
+      iconAnchor: [19, 19]
+    });
+    const marker = L.marker([ship.lat, ship.lon], { icon: markerIcon, title: ship.name }).addTo(map);
+    const popup = document.createElement('div');
+    popup.className = 'vessel-popup';
+    const heading = document.createElement('strong');
+    heading.textContent = ship.name;
+    const details = document.createElement('span');
+    details.textContent = `${ship.vessel_type} · ${Number(ship.speed).toFixed(1)} kn`;
+    const status = document.createElement('small');
+    status.textContent = `${ship.status} · Course ${ship.course}°`;
+    popup.append(heading, details, status);
+    marker.bindPopup(popup);
+    markers.set(ship.name, marker);
+    fleetBounds.push([ship.lat, ship.lon]);
+  });
+  if (fleetBounds.length) map.fitBounds(fleetBounds, { padding: [34, 34], maxZoom: 13 });
+
+  document.getElementById('nautical-layer-toggle').addEventListener('change', (event) => {
+    if (event.target.checked) nauticalLayer.addTo(map);
+    else map.removeLayer(nauticalLayer);
+  });
+  document.getElementById('fit-fleet').addEventListener('click', () => {
+    const currentBounds = [...markers.values()].map((marker) => marker.getLatLng());
+    if (currentBounds.length) map.fitBounds(currentBounds, { padding: [40, 40], maxZoom: 14 });
+  });
+  document.querySelectorAll('.fleet-vessel').forEach((button) => {
+    button.addEventListener('click', () => {
+      const marker = markers.get(button.dataset.vessel);
+      map.flyTo(marker.getLatLng(), 15, { duration: 0.6 });
+      marker.openPopup();
+    });
+  });
+
+  let selectedFilter = 'all';
+  const search = document.getElementById('vessel-search');
+  const vesselButtons = [...document.querySelectorAll('.fleet-vessel')];
+  const emptyState = document.getElementById('fleet-empty');
+  const updateFleet = () => {
+    let visibleCount = 0;
+    vesselButtons.forEach((button) => {
+      const matchesFilter = selectedFilter === 'all' || button.dataset.status === selectedFilter;
+      const matchesSearch = button.dataset.vessel.includes(search.value.trim().toLowerCase());
+      button.hidden = !(matchesFilter && matchesSearch);
+      if (!button.hidden) visibleCount += 1;
+    });
+    emptyState.hidden = visibleCount !== 0;
+  };
+  search.addEventListener('input', updateFleet);
+  document.querySelectorAll('.fleet-filter').forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedFilter = button.dataset.filter;
+      document.querySelectorAll('.fleet-filter').forEach((filter) => filter.classList.toggle('active', filter === button));
+      updateFleet();
+    });
+  });
+  const timeLabel = document.getElementById('tick-time');
+  const tickButton = document.getElementById('advance-sim');
+  const updateVesselPopup = (marker, ship) => {
+    const popup = document.createElement('div');
+    popup.className = 'vessel-popup';
+    const heading = document.createElement('strong');
+    heading.textContent = ship.name;
+    const details = document.createElement('span');
+    details.textContent = `${ship.type} · ${Number(ship.speed).toFixed(1)} kn`;
+    const status = document.createElement('small');
+    status.textContent = `${ship.status} · Course ${Number(ship.course).toFixed(0)}°`;
+    const position = document.createElement('small');
+    position.textContent = `${Number(ship.lat).toFixed(4)}° N, ${Number(ship.lon).toFixed(4)}° E`;
+    popup.append(heading, details, status, position);
+    marker.setPopupContent(popup);
+  };
+  const advanceFleet = async () => {
+    tickButton.disabled = true;
+    try {
+      const response = await fetch('{{ url_for("advance_simulated_ships") }}', {
+        method: 'POST',
+        headers: { Accept: 'application/json' }
+      });
+      if (!response.ok) throw new Error(`Simulation update returned HTTP ${response.status}`);
+      const result = await response.json();
+      result.ships.forEach((ship) => {
+        const marker = markers.get(ship.name);
+        if (!marker) return;
+        const newPosition = L.latLng(ship.lat, ship.lon);
+        marker.setLatLng(newPosition);
+        marker.setIcon(L.divIcon({
+          className: 'vessel-marker-shell',
+          html: `<span class="vessel-marker ${ship.status.toLowerCase().replace(/\s+/g, '-')}" style="--course:${Number(ship.course) || 0}deg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 14 2 5h14l2-5-9-4zM12 10V3m0 0H7v5h10V3z"/></svg></span>`,
+          iconSize: [38, 38],
+          iconAnchor: [19, 19]
+        }));
+        updateVesselPopup(marker, ship);
+        const listItem = document.querySelector(`.fleet-vessel[data-vessel="${CSS.escape(ship.name.toLowerCase())}"]`);
+        if (listItem) {
+          const info = listItem.querySelector('.fleet-vessel-info small');
+          const course = listItem.querySelector('.fleet-vessel-course');
+          if (info) info.textContent = `${ship.vessel_type} · ${Number(ship.speed).toFixed(1)} kn · ${Number(ship.lat).toFixed(4)}, ${Number(ship.lon).toFixed(4)}`;
+          if (course) course.textContent = `${Number(ship.course).toFixed(0)}°`;
+        }
+      });
+      timeLabel.textContent = `updated ${result.updated_at} · +1 sim min`;
+      document.querySelector('.simulation-kpi').classList.remove('simulation-paused');
+    } catch (error) {
+      timeLabel.textContent = 'update paused — retry';
+      document.querySelector('.simulation-kpi').classList.add('simulation-paused');
+      console.error('Unable to advance local vessel simulation.', error);
+    } finally {
+      tickButton.disabled = false;
+    }
+  };
+  tickButton.addEventListener('click', advanceFleet);
+  window.setInterval(advanceFleet, 15000);
+  window.setTimeout(() => map.invalidateSize(), 100);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Weather & Waves · SmartMarineSafety{% endblock %}
+{% block page_heading %}Weather & Wave Outlook{% endblock %}
+{% block content %}
+{% set current = conditions.forecast[0] %}
+<div class="page-intro weather-page-intro">
+  <div><div class="eyebrow">CHENNAI COAST · ENVIRONMENTAL OUTLOOK</div><h1>Weather & wave predictor</h1><p class="muted">A changing local scenario model for planning-interface preview.</p></div>
+  <div class="forecast-updated"><span class="simulation-pulse"></span><span><b>MODEL UPDATED</b><small id="forecast-updated">{{ conditions.generated_at }}</small></span></div>
+</div>
+<div class="scenario-notice"><span>ⓘ</span><p><b>Scenario forecast — not an observed forecast.</b> Generated locally without weather or buoy feeds. Do not use for voyage or safety decisions.</p><span class="pill amber">NO EXTERNAL DATA</span></div>
+<div class="weather-summary-grid">
+  <section class="weather-now-card">
+    <div class="weather-now-top"><span class="weather-condition-icon" aria-hidden="true">☀</span><span class="pill teal">{{ current.condition|upper }}</span></div>
+    <span class="weather-location">CHENNAI COASTAL SCENARIO</span>
+    <div class="weather-now-temperature">29<span>°C</span></div>
+    <div class="weather-now-caption">Illustrative air temperature</div>
+    <div class="weather-wave-art" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="weather-now-footer"><span>Scenario projection</span><span>Local model</span></div>
+  </section>
+  <div class="weather-metric-grid">
+    <article class="weather-metric-card"><div><span>Wind speed</span><span class="weather-metric-icon blue-bg">↗</span></div><b>{{ current.wind_kmh }} <small>km/h</small></b><p>Direction {{ current.wind_direction }}°</p></article>
+    <article class="weather-metric-card"><div><span>Significant wave</span><span class="weather-metric-icon teal-bg">≈</span></div><b>{{ current.wave_m }} <small>m</small></b><p>Estimated scenario height</p></article>
+    <article class="weather-metric-card"><div><span>Wave period</span><span class="weather-metric-icon blue-bg">∿</span></div><b>{{ current.period_s }} <small>sec</small></b><p>Modelled wave interval</p></article>
+    <article class="weather-metric-card"><div><span>Tide scenario</span><span class="weather-metric-icon amber-bg">⌁</span></div><b>{{ current.tide_m }} <small>m</small></b><p>Illustrative tidal curve</p></article>
+  </div>
+</div>
+<section class="panel forecast-panel">
+  <div class="panel-head forecast-panel-heading"><div><h3>Next 24 hours</h3><p>Four-hour scenario intervals · generated locally</p></div><span class="pill blue">7 MODEL STEPS</span></div>
+  <div class="wave-forecast-chart" role="img" aria-label="Scenario wave height bars for the next 24 hours">
+    {% for item in conditions.forecast %}
+    <div class="wave-forecast-column">
+      <div class="wave-bar-track"><div class="wave-forecast-bar {{ 'rough' if item.wave_m >= 1.05 else 'moderate' if item.wave_m >= 0.75 else 'calm' }}" style="height:{{ [[(item.wave_m / 1.6 * 100)|round|int, 18]|max, 100]|min }}%"></div></div>
+      <b>{{ item.wave_m }} m</b><span>{{ item.time }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="forecast-chart-legend"><span><i class="forecast-swatch calm"></i>Calm scenario</span><span><i class="forecast-swatch moderate"></i>Moderate scenario</span><span><i class="forecast-swatch rough"></i>Rough scenario</span><span class="forecast-chart-units">Wave height · metres</span></div>
+</section>
+<section class="panel forecast-table-panel">
+  <div class="panel-head"><div><h3>Marine scenario timeline</h3><p>Modelled values only — no live sensor readings</p></div></div>
+  <div class="table-wrap"><table><thead><tr><th>TIME</th><th>CONDITION</th><th>WIND</th><th>DIRECTION</th><th>WAVE HEIGHT</th><th>PERIOD</th><th>TIDE</th></tr></thead><tbody>
+  {% for item in conditions.forecast %}
+    <tr><td><b>{{ item.time }}</b></td><td><span class="forecast-condition {{ item.condition|lower }}">{{ item.condition }}</span></td><td>{{ item.wind_kmh }} km/h</td><td>{{ item.wind_direction }}°</td><td>{{ item.wave_m }} m</td><td>{{ item.period_s }} s</td><td>{{ item.tide_m }} m</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+  <div class="panel-foot"><span>Calculation source: {{ conditions.source }}</span><span>Generated <time id="forecast-foot-time">{{ conditions.generated_at }}</time></span></div>
+</section>
+<script>
+(() => {
+  const updateForecastTime = async () => {
+    try {
+      const response = await fetch('{{ url_for("api_weather_forecast") }}', { headers: { Accept: 'application/json' } });
+      if (!response.ok) return;
+      const result = await response.json();
+      document.getElementById('forecast-updated').textContent = result.generated_at;
+      document.getElementById('forecast-foot-time').textContent = result.generated_at;
+    } catch (error) {
+      console.warn('Unable to refresh the local scenario timestamp.', error);
+    }
+  };
+  window.setInterval(updateForecastTime, 60000);
+})();
+</script>
+{% endblock %}
